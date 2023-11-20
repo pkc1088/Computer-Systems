@@ -1,0 +1,205 @@
+<6장(43pge~)>
+rdi -> rsi -> rdx(내부변수로도 사용) 순으로 argument사용
+
+-Caller Saved-
+이 레지스터들에 데이터 담은 채로 프로시져 콜을 하고, 이 정보 유지 원함 
+그럼 콜러가 콜하기전에 저장해야함 
+return value : rax
+Arguments : rdi, rsi, rdx, rcx, r8, r9
+temporaries : r10, r11
+
+-Callee Saved-
+temporaries로 작업하다 리턴할때 원상복구 시킴
+temporaries : rbx, r12, r13, r14
+frame pointer, temporaries : rbp
+restored after exit : rsp
+
+<7장>
+int, float : 4byte / double, pointer : 8byte
+size_t : unsigned 라서 jle 아니라 jbe로 비교
+
+int (*A3)[3] 을 *An으로 접근하면 int A1[3]을 An(기본)으로 접근하는 것과 똑같음
+int *arr[3] 은 2차원 배열로 취급되는듯
+nested array : 한 번만 접근
+multi level array : 두 번 접근
+
+caller saved register인 rax는 void 함수에서는 callee saved의 temporary로 가장 먼저 쓰임
+
+alignment
+double v는 8바이트이니까 8바이트의 단위에서 시작되어야해서 4바이트를 띄운다.
+제일 처음 p+0과 끝도 multiple of 8이여야함. 이때 8은 가장 큰 double로 맞춘다.
+큰 순서대로 앞에서부터 배치(internal padding 사라짐). 
+하지만 external padding이 생길 수 있음(이 구조체를 연속적으로 할당(어레이)할 때)
+movzwl : w(2byte)에서 l(4byte)로 옮기고 나머지 2byte는 zero padding 
+             이때 이 명령어는 상위 4byte도 zero로 패딩되긴함
+
+<8장>
+Memory Layout
+Stack 영역 : 아래로 자람, 지역변수 담음, 상한 존재
+Heap 영역 : malloc(), new() 동적 할당, 상한 존재 x (shared library 위치를 알기 때문)
+Data 영역 : statically allocated data (전역변수, 정적변수, String constants)
+Text 영역 : R.O code이다
+
+buffer overflow : when exceeding the memory size allocated for an array
+	          (stack에서 일어남)
+19pge 그림
+
+system level protection 
+1. Randomized stack offset (each time execution)
+(code와 global은 변화없지만 local(stack)과 heap은 매번 달라짐)
+
+2. Non executable code segments - 스택에 실행코드 자체를 못 넣게함
+(read-only or writable로 설정함)
+
+3. Stack Canaries - 스택에 카나리를 넣고 작업 전후 값 비교로 공격받았는지 체크함
+
+Return oriented programming (for hackers)
+실존하는 code를 쓴다 (library code from stdlib) -> gadgets이라 부름
+존재하는 code 덩어리를 잘게 분석해서 원하는 gadget으로 만든다
+gadget의 마지막은 ret으로 끝나야함(0xc3)
+스택의 리턴어드레스(rsp)에 내가 원하는 gadget들을 집어넣으면 
+gadget이 작업하고 리턴되면 그 다음 gadget들이 순차적으로 실행됨
+
+Union : allocate accoring to largest element
+bit string을 float로 해석하면 값 달라짐 (그 반대 방식도 값 달라짐)
+
+<9장>
+휘발성
+sram : digital - cache
+dram : analog - main memories, frame buffers
+
+synchronous라는 말은 클록이 있고 클록에 동기화된다는 뜻
+Synchronous DRAM (SDRAM) 
+- 정사각형 cell 배치 (이웃한 column 보는건 그렇게 느리지 않음)
+- conventional clock signal 사용
+- row 선택후 column 읽음
+
+Double data-rate synchronous DRAM (DDR SDRAM)
+- double edge clocking sends two bits per cycle per pin
+
+비휘발성(nonvolatile memories)
+ROM : read-only memory, 공장에서 찍어나오는 memory						
+PROM : programmable ROM, 한번만 쓸 수 있음
+EPROM : Eraseable PROM, 지우고 쓸 수 있음
+EEPROM : Electrically EPROM
+Flash memory : EEPROMs, 부분적으로 지우고 쓸 수 있음, 닳는다
+	firmware, ssd, disk caches 에 쓰임
+
+Disk capacity - disk는 비접촉식이라 덜 닳음
+recording density : track에 몇 비트 sector 몇 개 담느냐
+track density : 디스크에 몇 track 담느냐
+areal density : recording density * track density
+
+seek : 트랙 위치 바뀌는것. 값 fixed
+rotational latency : 트랙 위치 바꾼후 타겟 읽기 직전까지 기다리는 시간
+	1/RPM * 60sec/1min * 1/2
+data transfer : 타겟 자체를 읽는 시간
+	1/RPM * 1/(avg num sectors/track) * 60secs/1min
+access time = seek time + rotational latency + data transfer
+
+avg num sectors/track = 400 의미는 트랙당 섹터수가 400개란 뜻
+7200RPM 의미는 1초당 120회 돈다는 뜻 (60으로 나누면) = 1/120 s이다
+연속으로 읽으면 seek time 한번만. seek time과 rotational latency가 크다
+
+block의 최소단위 : sector 
+cpu가 디스크 컨트롤러에게 logical block number과 쓰일 메모리 주소를 줘서 요청을 함.
+그 후 디스크의 블락은 바로 그 메모리 주소에 쓰인다. (DMA 방식으로 이땐 cpu가 관여 x)
+DMA 후엔 disk controller가 cpu에 interrupt보내서 끝났다는 걸 알림
+
+SSD
+flash memory로 이루어짐 -> Block -> page로 이루어짐
+페이지단위로 읽고 쓰고 블락단위로 erase함
+in-place updating 불가 (erase 후 write 해야함)
+
+FTL(flash translation layer) : 플래시메모리의 약점을 완화시키며 HDD기능을 emulate해주는 s/w layer 
+	wear-leveling : 메모리 블럭을 균등하게 사용하게 함
+	bad block 관리 : spare block으로 inital bad block이나 runtime bad block(worn-out block)을 교체해줌
+	Re-mapping : 원래 자리에 writing 안되기에 자리 배치해줌
+
+로지컬 섹터를 낸드플래시 블럭에 맵핑하는 방법
+Block level mapping 
+	mapping table 작게 유지가능, 핸들 단위 커지므로 효율 떨어짐
+Page level mapping
+	mapping table 크기 커짐, 핸들링 단위 작으므로 효율성 좋음
+
+Locality 
+temporal locality : 최근에 실행한 명령어를 재방문
+spatial locality : 하나 읽을때 그 옆에 것도 같이 읽음
+
+Cache
+spatial locality를 위해 block 단위로 캐싱함
+
+Miss concept
+cold miss : 처음에 빈 상태에서 무조건 미스나는것
+capacity miss : cache보다 active cache block이 더 클때 발생
+conflict miss : 캐싱에서 블록의 위치가 어느정도 지정되어 있는데
+	특정자리에 두 개 블록중 하나가 온다하면 2way임
+     	이때 0과 8이 반복되면서 들어오며 한 자리 놓고 계속 경쟁되는 것
+
+placement policy : fetch해오고 그 블록을 캐시 어디에 둘건지
+replacement policy : 어떤 블록을 방출할건지(victim)
+
+cache size : set(S) * line(E) * byte(B)
+Direct Mapped cache (E = 1)
+E-way Set Associative Cache (E = 2)
+
+write-hit
+write through : 캐시와 메모리 둘다에 씀
+write back : 라인을 교체할때까지 메모리에 쓰는걸 연기함 (캐시의 효용 있음)
+	dirty bit 추가
+
+write-miss
+write allocate : cache에 load 후 line에 업데이트
+no write allocate : 메모리에 바로 쓴다 (cache에 load x)
+
+matrix : miss rate = sizeof(a_ij) / B
+ijk = 0.25 + 1.0 = 1.25
+kij = 0.25 + 0.25 = 0.5
+jki = 1.0 + 1.0 = 2.0
+빨간색과 파란색이 초반에 차이 얼마 안나는건 캐시가 충분히 커서임.
+그러나 n이 커지기 시작하면 차이가 많이 나게됨.
+
+.c파일이 .o 파일로 바뀌고 linker가 .o파일(relocatable)을 링킹해서 
+prog 실행파일(executable)이 만들어짐
+
+Linker advantages
+modularity - 각각을 컴파일하고 한번에 linking 가능, 라이브러리 빌드 가능 
+	(수정된 부분만 고치면 됨)
+efficiency - concurrent하게 컴파일 가능, 공간적 절약 가능
+
+Linker do - 여러개 나눠진 object file 묶어서 하나의 execuatable 파일로 만드는 역할
+Symbol resolution : define, reference symbols (symbol table 이용) 
+Relocation : 나눠진 코드와 데이터 섹션을 하나 섹션으로 merge함
+
+ELF(executable and linkable format) : .o/a.out/.so을 위한 통일된 포맷
+.data는 초기화된 global, .bss는 초기화 안된 global (공간 차지 x)
+
+local symbol은 linker입장에서 의미 없음(링커는 모듈간의 연결을 담당)
+
+local static은 global과 동일하게 취급되서 .bss나 .data 영역에 담김
+
+readelf -s symbols.o
+global과 external이 .o 파일에 있음 (main, printf 포함)
+
+strong : procedures, 초기화된 global
+weak : 초기화 안된 global, extern
+strong과 strong은 에러, strong과 weak는 믹스가능
+
+relocation에 의해 main.o인 relocatable object file에서 .data위치와 
+executable object file에서 .data위치가 다름
+
+static library는 duplication의 약점이 있음 (in the stored executables&running executables)
+-> shared library 나옴
+
+executable file은 loader로 .so인 dynamic library를 탑재하면 fully linked executable file이
+메모리에 존재하게 된다
+
+
+
+
+
+
+
+
+
+

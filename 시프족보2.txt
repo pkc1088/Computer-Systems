@@ -1,0 +1,91 @@
+<2022>
+
+1. concurrent
+2. exception
+3. symbol resolution
+4. load, run
+5,6. locality
+7. ROP(return oriented programming)
+8. conflict miss
+9. FTL(flash translation layer)
+10. 범위아님
+11. temporal : 매 iteration마다 sum을 참조함 (dat)
+	      반복문을 통해 명령어들을 반복적으로 참조 (inst)
+     spatial : array elements를 연속적으로 참조함 (data)
+	   명령어를 순차적으로 참조함 (inst)
+
+12. salq     $6, %rsi             # 64*i
+     addq    %rsi, %rdi           # A + 64*i
+     movl    (%rdi,%rdx,4), %eax  # Mem[A + 64*i + 4*j]
+
+13. movslq  16(%rdi), %rax      #   i = M[r+16]	  
+     movl    %esi, (%rdi,%rax,4) #   M[r+4*i] = val
+     movq    24(%rdi), %rdi      #   r = M[r+24]
+     testq   %rdi, %rdi          #   Test r
+     jne     .L11                #   if !=0 goto loop
+0~16 :  a / 16~24 : i / 24~32 : next
+rdi : r / rsi : val
+
+14.
+A : exploit code의 주소가 들어감(return address overwriten by gets())
+B : padding됨
+C : exploit code가 들어감
+D : 변화 없음?
+-1. Randomized stack offset - code와 global은 변화없지만 local(stack)과 heap은 매번 달라짐
+-2. Non executable code segments - 스택에 실행코드 자체를 못 넣게함
+-3. stack canaries
+
+
+<2021>
+1. ROP
+2. canary
+3. Memory hierachy
+4. .text section, uninitialized global varaible
+5. load time, run time
+6. exception
+7. process
+8. cache
+9. stack / heap / data / text (tdhs)
+10. 플래시메모리의 약점을 완화시키며 HDD기능을 emulate해주는 s/w layer 
+	wear-leveling : 메모리 블럭을 균등하게 사용하게 함
+	bad block 관리 : spare block으로 inital bad block이나 runtime bad block(worn-out block)을 교체해줌
+	Re-mapping : 원래 자리에 writing 안되기에 자리 배치해줌
+11. 05 00 00 00
+12. 중복
+13. 0~1 : c / 1~4 : padding / 4~8 : i[0] / 8~12 : i[1] / 12~16 : padding / 16~24 : double
+a[3]는 a[0]와 a[1]의 사이즈인 24 * 2 후에 위에 처럼 alignment됨으로
+a+48이 시작점이 된다.
+
+14. 중복
+15. salq    $2, %rsi            		# 4*digit
+     addq    univ(,%rdi,8), %rsi 	# p = univ[index] + 4*digit
+     movl    (%rsi), %eax        	# return *p
+rdi = index / rsi = digit
+
+16. 중복
+
+
+<2020>
+
+1. locality
+2. relocation
+3. cache
+4. Memory hierachy
+5. ROP(return oriented programming)
+6. 닳는다는 점(wear out)
+7. uninitialized global variable
+8. rotational latency
+9. static linking(compile), dynamic(loadtime, runtime)
+10. 중복
+11. 중복
+12. 중복
+13. p1.c의 x와 y는 strong이고 p2.c의 x는 weak symbol이기에 
+double x에 값을 쓰면 y에 overwrite 될 위험이 있으므로 문제이다.
+
+14. 사진 참고
+15.  leaq	(%rdi,%rdi,4), %rax		# 5*index
+      addl	 %rax, %rsi		# 5*index+dig
+      movl  pgh(,%rsi,4), %eax	# M[pgh + 4*(5*index+dig)]
+
+16. 중복
+17. 중복

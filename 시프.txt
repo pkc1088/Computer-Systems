@@ -1,0 +1,309 @@
+12pge
+early termination : 첫 인수가 0이면 바로 종료
+p && *p : 첫 인수 p로 null pointer reference를 예방할 수 있다.
+
+(LSR)logical shift는 부호가 바뀔 수 있음. (right shift의 경우)
+(ASR)부호를 보장하려면 arithmetic shift를 쓴다.
+arithmetic left shift란건 없음
+
+one's complement에서 109 + (-109) 하면 0이 아니라 
+11111111이 나오는데 이것도 0으로 취급(마이너스 0)
+
+two's 는 one's complement한 것에 +1한 것
+109+(-109)하면 1000 0000 이렇게 마지막 자리에 캐리가 발생하지만
+그 1은 버리고 000 0000나오니 0이 나온다.
+0000 0000 (0)에 // 0을 2's comple하면 0나온다는 소리임
+하나의 0의 표현을 갖고있음
+그래서 컴퓨터는 two's complement 사용함
+
+17pge
+x를 twos complement취하면 y가 됨 반대도 성립
+twos = signed임
+
+17, 18pge
+11000100 10010011에서 최상위 1은 negative로보고
+나머지 15자리만 계산함 그래서 최상위가 0이면 양수
+1이면 음수가 되니깐 결과값 음수가 나옴
+
+20pge
+TMIN이 TMAX보다 절대값 1더 큼 0이 positive로 들어가서
+twos's 0과 umin 동일
+twos's 1과 umax 동일
+
+22pge 
+표 16만큼 차이남 b2u와 b2t
+
+25pge
+non-negative는 동일
+negative일 경우 signed -> unsigned는 16더하고
+그 반대는 -16해줘야하지만 bits 표현은 모두 동일하다
+
+30pge
+-1 0U 같은경우 하나라도 unsigned이면 둘 다 unsigned로
+보고 비교함. 즉 -1은 unsigned에서 umax가 되니깐
+-1(umax) > 0U가 됨.
+
+214~7U와 -214~7-1(TMIN)에서 뒤가 u가 됨
+TMIN은 unsigned에서 TMAX + 1이되니깐 Tmax < Tmax+1이 된다.
+
+(int)214~8U에서 Tmax보다 절댓값 커지면 음수가된다.
+
+0315
+UADDw 는 w 비트만큼으로 끊어야하니 w+1비트로 표현되는 수와
+w비트로 표현되는 수 더해서 w+1되면 초과하게됨.(오버플로우)
+43p (int) casting = signed addition
+
+4bit 2's comp
+-8~7 : -8과 7사이 범위가 더해서 나오면 문제 x
+7+7로 14나오면 (1110) => 2's에서 음수 => 4bit로 표현시 -2가됨
+-5-5 = -10 (10110) 인데 앞에 캐리 날리면 0110임 즉 -6이됨
+즉 범위초과한 음수는 양수, 초과한 양수는 음수가 됨
+그리고 그 오버플로우발생시 차이는 16(4bit)임
+
+-2^(w-1) <= TADD4(u,v) <= 2^(w-1)-1
+	
+47pge ;;
+
+52pge
+3.5 floor =3이고 3.5 ceiling = 4
+음수에서 shift하면 원하는값 안나옴 (1차이남)
+-3.5의 floor는 -4, ceiling은 -3가 되니깐
+그래서 k만큼 right shift시키고 1뺴고 left시켜서 나눠줌
+
+56pge
+Tmin complement는 Tmax인데 거기 1더하면 다시 Tmin이됨
+
+59pge
+i가 -1이되면 umax가 되니 segment fault뜸
+sizeof(int) 리턴값은 unsigned가 되니 signed와 unsigned계산하면
+unsigned로 변환되서 에러. i를 size_t라는 unsigned 값을 반환하는걸로 고치면 해결
+
+
+이 명제는 signed int에 대해서는 항상 참이지 않습니다. signed int의 경우, 
+음수와 양수를 나타내기 위해 최상위 비트를 부호 비트로 사용하기 때문에, 
+비트 AND 연산을 할 경우 예상치 못한 결과를 초래할 수 있습니다.
+예를 들어, x가 -2일 경우를 생각해보겠습니다. -2는 이진수로 11111110으로 표현됩니다. 
+그리고 x-1은 -3을 의미하며, 이진수로 11111101로 표현됩니다. 
+이 경우, x & (x-1)은 11111100이 됩니다. 이진수 11111100은 -4를 의미하며, 
+0이 아니므로 명제는 거짓입니다.
+반면에 unsigned int의 경우에는 항상 참입니다. 이는 unsigned int가 양수만을 표현하기 
+때문에, 최상위 비트가 부호 비트로 사용되지 않고 0으로 고정되기 때문입니다.
+<floating>
+
+
+
+
+
+34pge
+encoding 될 마지막 비트 : G
+sticky ; round1일떄 sticky가 0인가 아닌가만 본다(하나라도 0이 아닌게 있으면 half way가 아니라
+			절반을 넘어섰으므로 round up한다.)
+rround가 1이여야 절반임 0이면 무조건 라운드 다운(버림)
+1000 처럼 라운드1 스티키0일때 가드를 0으로 만들기 위해 필요하면 증가시킴
+
+35pge
+exp(exponent)가 커질수록 표현 정밀도 낮아짐
+
+36pge
+M : mantics 
+s : sign, e : exponent
+
+G = 0, R = 1, S = 1 이므로 라운딩 업.
+0/6/001
+
+37pge
+예시에서는 뒤에께 지수 3으로 더 크니 뒤에껄로 맞춤
+라운드1이고 스티키0인 상태
+
+24비트 넘는 인티저를 int->float하면 라운딩됨
+
+42pge 강의
+
+<04/03>
+12pge
+implementation = organization
+
+13pge
+cpu안에 alu 있음
+cpu는 memory에서 code를 가져옴
+sp : stack pointer
+pc : program counter
+rip : register instructor pointer
+
+14pge
+linker는 라이브러리와 오브젝트파일 묶게 해줌
+
+15pge
+-S가 어셈블리 생성 옵션
+
+19pge
+머신코드에서 어레이, 스터럭쳐는 실존하지 x
+
+21pge
+0x0400595에서 시작된다는말
+아까 6줄 자리코드를 예시의 object code로 만듬.
+
+22.
+movq에서 q는 8바이트 움직임, 괄호는 메모리
+rbx의 주소를 담고 있음. rax가 t값을 갖고있고 그것을 (%rbx)로 보냄
+
+23.
+callq 400590은 400590으로 가라는뜻
+1. objdump -d sum
+2. gdb를 이용하는 방법
+의 방법을 이요해 디스어셈블 가능
+
+25.	>는 sum을 redirection해서 sum.d로 저장하는것
+27.	14xb : 14개의 hexa decimal byte
+
+30.
+전체폭은 64비트, 하위 32비트를 %eax 혹은 %r~d 등으로 표현
+왼편 8개 레지스터의 그 하위 32비트는 IA32의 레지스터와 동일함ㄴ
+그리고 그 중 esp ebp 제외한 6개는 범용임
+
+31.
+16비트 시절의 레지스터 네이밍을 ax cx~등으로 붙였음
+(32비트 하위의 16비트) 또 이중 8비트씩 나눠서 ah는 high, al은 low
+지금은 범용이라 상관없지만 예전에는 origin에 나온 목적에 따라 썼었음
+
+32.
+source에 immediate라고하는 constatnt를 쓸 수 있음
+$가 있으면 immediate, %는 register
+
+33.
+memory to memory는 없음
+rax에 4라고하는 값을 넣는거임
+reg, mem : store
+mem, reg : load
+
+34.
+Displacement는 offset이라고 부름
+8(%rbp)는 rbp 주소의 +8에 접근한다는 뜻
+
+35.
+첫인수는 rdi 두번째는 rsi로 쓰기로 약속함
+
+43. rb - base/ ri - index/ S - scale
+index에 Scale을 곱해서 base에 더해서 메모리에 접근
+어레이 엘리먼트가 4 or 8바이트의 데이터타입을 위해 scale이 필요함
+for(i=0;i<n;i++) a[i] = b[i]*c[i] 라고 할때
+a[i]에서 a가 base, index가 i이고 인티저라면 scale이 4이다
+S는 2의 n승이니 shift로 구현할 수 있음
+
+44.
+마지막 예씨는 base레지스터가 비었다는뜻 그냥 비워둠
+
+46.
+leaq : 메모리 접근하는게 아니라 주소만 계산해서 레지스터에 넘기겠다는 뜻
+movq는 계산해서 옮기는거고 leaq는 주소만 계산하겠다
+메모리접근이 아니라 계산한 주소만 destination에 넘기겠다라는 목적
+p = &x[i]는메모리 접근이 아님 그냥 주소를 계싼해서 포인터 p에 넘긴거임
+리턴은  rax임
+rdi + 2*rdi = 3*rdi이고
+salq 는 shift left 2이니까 3*2^2 = 12이니 12*rdi가 rax에 저장돼서 리턴됨
+
+47.
+q:64비트 l : 32비트 w : 16비트 b:8비트
+8	4	2	  1
+&는 비트단위(bitwsie)오퍼레이션, &&는 로지컬오퍼레이션
+sarq와 shrp 제외하고는 signed와 unsigned 구분하지 않음 연산에서 (동일하니까?)
+
+50.
+rdi -> rsi -> rdx(내부변수로도 사용) 순으로 argument사용
+rax : 리턴값이자 내부 변수로 사용
+
+lea 는 ()에 넣는건 계산결과만 dest로 보내는것 rdi와 rsi를 더한값을 rax에 넣어라.
+(des와 src가 같은 문제를 해결)
+t1은 두번쨰 줄 이후 사용안하니 t1 t2모두 rax를 쓴다.
+t3를 먼저 계산하지 않고 t4부터했음.
+rsi <= rsi * 2rsi = 3rsi 거기에
+salq 4 rdx 하면 shift left 4니깐 2^4 곱하면 48 곱한거가 됨
+
+t5 =t4 + x + 4
+rcx  rdx  rdi
+방식으로 leaq 4(rdi, rdx), rcx 함
+마지막으로 rax에 rcx를 곱한 값을 리턴함
+
+<5장>
+4,  clear : 0,  set : 1
+OF: positive숫자 두개 더해서 너무크면 음수가 되거나 그 반대상황
+leaq는 결과에따른 flag 세팅은 없다.
+
+msb가 1일때 sf가 1이다.
+
+11.
+Set의 결과를 레지스터64비트(8바이트)중 맨하위 한 바이트만 0또 1로 설정한다.
+12. 보면 그 가장 낮은 파이트를 al bl cl 등의 이름으로 부른다. 그 파트를 0또는 1로 세팅하는것임
+13. 나머지 7바이트를 movzbl를 이용해 0으로 지워준다.
+이떄 64비트 rax의 32비트 eax를 타겟으로 한다. 
+movzbq 1, rax가 합리적이나 아무튼 위의 방식도 나머지 비트들이 깨끗이 정리되긴함
+(코드 길이 줄이는 용으로 위의 방식을 씀)
+
+
+19.
+x<=y이면 L4로 점프하라는뜻
+
+
+15. 첫줄 자기자신을 xor하면 다 0으로 초기화시키는거임
+-1하면 borrow(빌려옴)이니 캐리플래그 생김
+-1에다가 -2를 한거니 (cmp를 통해) 여전히 음수니 SF인듯
+setl %al에서 -1<2 true이니까 al이 1이되고 나머지(7바이트)는 안바뀜 
+movzbl로 모두 0으로 초기화 시켜버림 맨뒤에 1 뺴고 SF는 여전히1(compq에서 이미 결정된거라)
+
+0000 1111
+unsigned에서는 <, signed에서는 >
+seta 는 unsgined에서 above라는뜻 다른 명령어의 기본 비교는 signed인듯
+
+21.
+'not' test를 함
+
+22. 
+cmove : conditional move; 조건이 맞으먄 move한다
+조건이 맞았으면 업데이트를 안하고, 조건 안맞으면 else에서 계산한걸로 대체
+앞슬라이드 goto는 then이든 else든 branch가 필수로 일어나지만 cmove는
+조건검사후 branch를 안할 수도 있으니 명령어 개수 자체는 한 두개 많아도 더 이득임
+
+24.
+1. hard1, hard2로 헤비한 계산 두번하는건 비효율 
+2. 포인터가 널인데 레퍼런스해퍼리면 위험하다.
+
+26.
+맨오른쪽 비트보고 1이면 reuslt증가하고 시프트. 모두 0이면 종료
+
+27.
+movq $0, %rax랑 슬라이드에 나와있는 movl 조건이랑 같음
+컴파일러는 길이 짧은 movl을 씀(32비트)
+rep; ret 은 파이프라인이랑 관련
+
+32.  jump  to middle과 do-while version은 옵션차이 
+
+33. 32bit면 wsize = 32
+
+36pge에 x표시된 구문, 컴파일러는 i가 wsize보다 작다는걸 굳이 비교하지 않아도 알고있다.
+37pge에 반영된듯(왼쪽).
+
+41. rcx가 w
+64비트가정) L4테이블 참조해서 rdi+8 위치로 가라. 
+포인터가 8바이트니까 다음 인덱스. 이때 *는 포인터(인다이렉트 점프)
+그럼 점프테이블에가고 거기에 점프타켓으로 갈 수 있는 주소값있음
+(그래서 포인터쓰는듯)
+ 
+47. 전체코드에 rax는 z있는듯
+rcx는 w임. 
+idivq는 나눈다는거만알아두기 (밑에 코멘트있음)
+
+
+**practice problem 중에 시험**
+
+
+
+
+
+
+
+
+
+
+
+
+

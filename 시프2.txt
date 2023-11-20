@@ -1,0 +1,289 @@
+<05.03_7-machine-data>
+
+25pge
+구조체는 메모리 블럭으로 표현됨
+
+27. 
+i가 rax로 쓰임
+첫줄 r+16은 i이고 그것을 rax에 담음
+둘쩨줄 a[i] = value의 의미
+셋째줄 24(%rdi)는 next이다.
+testq 0이면 빠져나오고 아니면 반복
+
+즉 레코드시작에서 offset을 더해서 structure의 멤버에 접근함
+
+28.
+32bit이면 4바이트, 64bit이면 8바이트 단위로 alignment해줘야함
+처음에 4바이트로 align해야해서 3byte가 패딩됨. (사실 a[i]에서 i는 4바이트 단위이니 4배수에서 시작)
+v는 8바이트이니까 8바이트의 단위에서 시작되어야해서 4바이트를 띄운다.
+제일 처음 p+0도 multiple of 8이여야함. 이떄 8은 가장 큰 double로 맞춘다.
+
+32. 구조체멤버 순서를 바꾸면 internal padding이 안생기게 할 수 있음.
+큰 순서대로 앞에서부터 배치. 하지만 external padding이 생길 수
+있음(이 구조체를 연속적으로 할당(어레이)할 때)
+
+34. a[idx].j는 a+12*idx + 8이다. j구하려면 8더해야함(padding 포함해서)
+movzwl : zero, word -> long
+
+floating point는 시험안나올듯
+
+<8장>
+
+...
+
+27.
+scanf에 %s는 버퍼오버플로우 공격에 취약
+
+28.
+B지점(스택 시작 주소)이 프로그램 실행할 때마다 달라짐(공격하기 어려움)
+
+30. 
+local의 위치가 매번 달라짐
+
+31. 다시
+
+32.
+linux - stack guard value.
+
+35.
+마지막 널 포함 7글자 넣으면 ok, 넘으면 에러 띄움	
+
+36.
+여기서 말하는 existing code를 gadgets이라함
+
+39.
+리턴어드레스에 내가 원하는 gadget을 집어넣음
+
+42.
+1. floating point bit stream으로 해석해서 앞에것 나옴 
+뒤에는 unsigned를 floating point로 변환할때 precision이 보존돼야함
+2. ~
+
+<9장>
+4. sram = digital, dram = analog
+
+5.
+synchronous라는 말은 클록이 있고 클록에 동기화된다는 뜻
+sdram은 2차원으로 이뤄어져있는데 아웃한 row를 읽는 것은 앞장의 소개처럼
+sram보다 10배까지 느린건 아님.
+sram은 정사각형 셀로 이루어져 있고 row결정한후 column본다.
+이웃한 컬럼을 접근하는 시간은 비교적 빠르다.
+
+6. 
+공장에서 찍어내는 rom을 mask rom이라 부름.
+EPROM : programmed된 내용을 지우고 써야함
+
+13.
+cpu와 메인메모리 사이의 버스를 통해 이동한다.
+
+19.
+surface마다 arm의 위치는 동일하다. 
+
+27.
+red를 읽기위해 헤드가 이동하는걸 seek이라 함
+
+30.
+Transfer time : 그 섹터를 읽는 시간
+
+33.
+logical block과 섹터를 맵핑해주는걸 disk controller가 함
+
+34.
+ioBridge - ioBus - Disk controller 경로로 디스크를 읽음
+
+35.
+DMA : 디스크 컨트롤러가 바로 메모리에 쓴다.
+(cpu가 개입되지 않는다)
+
+38.
+페이지 묶어서 블락이라 함.
+erase 단위는 블락. 쓰는건 page
+꺠끗한 상태에서 write 할 수 있고 지우는건 한번에 함
+플래시 메모리로 이루어져 있음
+
+42. Flash translation layer 층이다.
+flash memory가 갖는 단점을 완화시킴
+
+46. 최초에 포맷할때 bad block 발견할 수 있음.
+쓰다가 worn out되면  발견가능.
+
+47. write할떄 원래 자리에 write할 수 없으니 mapping table로 관리
+(FTL이 하는 일)
+
+50. page level mapping : 핸들링하는 단위가 작아지니 효율적, 테이블 크기가 커짐
+mapping table size <-> flexibility of manage (tradeoff)
+
+52. 읽고 쓰기보다는 erase하는 시간이 오래걸리는거임
+	
+65. disk -:> memory에 올리는것도 캐싱이다.
+66. spatial locality를 위해 block 단위로 읽음
+67. 14번 블럭의 어떤 데이터가 요청됐을떄 캐시에 있으면 hit
+68. 12번 miss나면 메모리에 요청해서 채워놓음.
+     LRU : 최근에 가장 덜 쓴게 victim이 됨(여러 방식 있음)
+69. 처음에 캐시에 아무것도 없을떄 무조건 miss나는것
+     캐싱에서 블록의 위치가 어느정도 지정되어 있는데
+     특정자리에 두 개 블록중 하나가 온다하면 2way임
+     이때 0과 8이 반복되면서 들어오면 한 자리 놓고 계속
+     경쟁되는게 conflict miss임
+
+70. 캐시 블록 사이즈는 하이라키 층당 다름
+
+https://siyangshao.github.io/posts/202206240956/
+https://hyeo-noo.tistory.com/73
+
+<05/31 - 10장>
+
+11.  tag 값과 같은 hit, 다르면 miss
+cpu address에서 set index를 찾아내고 tag와 비교하는 듯
+
+12. E=1이면 Direct Mapped cache라고 하고 set index안에 line(block)이 하나다.
+cache 안의 block을 라인이라 부름.
+
+13. block offset이 4와 100으로 매칭됨.
+한 라인은 8바이트이고 두개의 워드가 들어있는거임. 
+오른편은 32/64 full address이고 마지막은 100인 4임
+4를 통해 0123인지 4567인지 결정할 수 있음.
+만약 110이면 67을 접근할 것임. (접근단위가 바이트면 6이고 16비트면 67을 접근할거임)
+
+14.
+미스일경우, 그 자리를 메모리에서 읽어온걸로 replace함
+
+15. 처음엔 cold miss. 
+두번째로 1이 들어갈때 tag가 0이고 셋이 00이니 hit임.
+7로 접근하면 11이니까 miss임.
+8요청하면 셋번호는 00이고 태그는 1이니 미스->replace
+마지막에 0요청되면 complete miss임.
+
+18..
+다이렉트맵트캐시는 그자리를 replace인데 이 경우는 두 블록 중 하나를 replace하면됨.
+
+19. 
+2-way는 set이 두 개임. -> 셋 인덱스는 한 비트, 태그는 두 비트
+1은 special locality로 hit임.
+8은 set0의 빈곳을 채울 수 있음.
+0은 set0에 남아있는 곳에서 히트가 생김
+(전에꺼랑 비교하면 hit rate가 올라감)
+
+20.
+write through : 캐시에도 업데이트하고 메모리에도 write함.
+write back : replace할때까지 메몰에 쓰기를 연기한다.(캐시의 효용성을 높일 수 있음)
+		즉 캐시에만 쓴다.
+
+write-miss인 경우 캐시 로드후 업데이트(write allocate), 바로 메모리에 쓰자(no write allocate)
+
+21.
+L1은 data와 instruciton  cache를 분리하고있음
+L2. L3, memory는 통합.
+
+28.
+size는 array 크기
+stride 한번에 접근하고자하는 array의 일부
+stride는 special locality와 관련.
+size는 temporal locality와 관련있음.
+가장 높은 지점은 읽고자 하는 비트가 다 들어가있는것. stride가 작다는건 뭐 읽어올떄 옆에껄 많이 읽어오지 않았다는뜻
+(L1 캐시의 성능이나옴)
+stride 커지면 성능 약간 떨어짐, size 커지면 성능 떨어짐.
+stride가 적당하면 special locality가 제역할하는데 너무커지면 필요없는 애까지 읽으니 성능 떨어진다는 뜻 
+
+<06/05>
+30. sun은 레지스터에 있어 캐시에 영향 없다고 가정.
+
+32. spatial locality : 한번에 읽을때 주변에 얼마나 같이 읽어오는지.
+a_ij 즉 엘리먼트 하나가 8바이트이고(double), 블록이 32byte이면 miss rate는 1/4이다.
+처음껀 미스지만 한번에 4개 읽어오니까 나머지 3개는 hit라서임.
+
+column으로 읽으면 매번 미스생김. -> miss rate 1이다.
+
+34.
+루프 인덱스를 jik로 해도 앞에꺼랑 결국 동일함.(A B C 더하면 1.25)
+
+35. kij순으로 루프돌리면
+a[i][k]를 고정하고 j를 돌리면 횡방향으로 접근해나감 -> partial sum을 c에 적음.
+
+40.
+초록색은 캐시를 잘 활용해서 사이클 낮음.
+빨간색과 파란색이 초반에 차이 얼마 안나는건 캐시가 충분히 커서임.
+그러나 n이 커지기 시작하면 차이가 많이 나게됨.
+
+<11. Linking>
+
+3. linker를 통해 최종 실행파일이 생성됨(라이브러리 파일들이 이때 엮어짐)
+
+6,7. Linker가 symbol table을 이용해서 main.c에서 sum을 reference할 수 있음.
+
+9.
+printf가 static linking했으면  executable object file에 있지만 dynamic linking했으면
+shared object file에 생성됨.
+
+11.
+ELF는 공간차지 하지 x, 정보만 들어있음
+bss에 데이터 자체는 들어있진 않음 int b[100];이라고할떄 100만큼 자리만 잡아둠
+
+12.
+text와 data에 대한 .rel은 relocation section이다.
+메모리에 load될때 modifiying될 영역임.
+
+13.
+global symbol : 내가 정의 남이 사용가능
+external : 내가 써야하는데 여기 정의되어있지 않을때
+linker 입장에서 local symbol은 의미가 없음(사라지는 심볼)
+
+14.
+main관점에서 sum은 external임
+linker 관점에서 val은 남아있지 않음. sum의 i, s도 마찬가지
+
+16.
+static int x : global variable
+f(),g() static int x : local static variable (서로 다른 variable임 f와 g에)
+		-스택이 아닌 공간에 저장됨(.bss나 .data영역에)
+
+.data : 초기화됨
+.bss : 초기화되지 x, 영역만 잡아놈, 메모리 올라갈때 초기화됨
+static global : local symbol임- 다른 모듈과 공유되지 않는 symbol (예시의 펑션 3개에게는 보여지나 밖에서는 안보임)
+			-그래서 스택에 담으면 안됨
+17.
+strong 끼리는 같은 이름으로 중복될수 없으나 strong-weak조합은 가능
+
+19.
+두 번째 그림
+p1에서 x에 어떤값 넣고 p2에서 x에 어떤값 넣으면 사이드이펙생김
+링커가 int x을 p1과 p2에서 모두 같은 스택에 넣기때문
+네 번째 그림
+p1의 strong인 x를 starting 주소로 잡음. int x와 double x가 공간을 공유함
+p2에서 x에 뭘 쓰면 반드시 y에 영향을줌 (세번쨰 그림은 줄 수 도 있음- might)
+
+24. int array의 경우 링킹후 위치 달라짐 (relocation)
+25. relocation을 대비해 미리 주소를 담아둠
+26. linker 역할 :  symobl resolution, relocation
+33. 링커에서 lib.a와 같이 라이브러리를 유저프로그램과 묶어서 executable progrma을 만듬
+37. libvector.so : 아카이브
+41. addvec의 경우 마지막에 run time open을 함
+42. Load time과 run time linking 하는 것을
+library 관점 : shared library
+linking 관점  : static, dynamic
+
+<12>
+7. 유저코드가 실행하다 시스템에 서비스를 요청하는 모든 상황
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

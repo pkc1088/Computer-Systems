@@ -1,0 +1,110 @@
+<2022>
+1. 5+0.5+0.0625
+
+2. 0x00(0) / 0xFF(255) / 0x80(-128) / 0x7F(127) / 0xFF(255)
+
+3. 
+(a) 
+denormalized value란, 부동 소수점에서 지수부가 모두 0인 것을 말함
+(b)
+normalized value로는 표현할 수 없는 아주 작은 수나 
+0에 가까운 값들을 정확히 ㅈ표현하기 위해서입니다.
+
+4. 6개(register convention), stack
+
+5. 00000000 FFFFFFFF
+
+6. 0 1 0 0
+
+7. assembler(gcc, as) / disassembler(objdump)
+
+8. 120
+
+12.
+(%rdi), %rax
+(%rsi), %rdx
+%rdx, (%rdi)
+%rax, (%rsi)
+
+13.
+int loop(int a)
+{
+    int i;
+    int r = 0;
+    for (i = 0; i < a; i++) {
+        r += i;
+    }
+    return r;
+}
+
+14.
+
+call_incr2:
+ pushq %rbx	(callee saved register)
+ subq $16, %rsp
+ movq %rdi, %rbx
+ movq $15213, 8(%rsp)
+ movl $3000, %esi
+ leaq 8(%rsp), %rdi
+ call incr
+ addq %rbx, %rax
+ addq $16, %rsp
+ popq %rbx
+ retz
+
+<2021>
+3.  이진수는 전기 신호가 가질 수 있는 두 가지 상태 (0과 1)를 표현할 수 있기 
+때문에 이진수를 사용하면 하드웨어 회로를 단순하게 구현할 수 있습니다
+
+5. 
+함수의 매개변수
+지역 변수(local variable)
+함수 호출 시 반환 주소(return address)
+//이전 스택 프레임의 포인터(previous frame pointer)
+
+caller saved : rax, rdi, rsi, rdx, rcx, r8, r9, r10, r11
+callee saved : rbx, rbp, rsp, r12, r13, r14
+
+9.
+i가 -1이되면 umax가 되니 segment fault뜸
+sizeof(int) 리턴값은 unsigned가 되니 signed와 unsigned계산하면
+unsigned로 변환되서 에러. i를 size_t라는 unsigned 값을 반환하는걸로 고치면 해결
+
+12.
+setl %al
+
+14.
+long loop(long a, long b){
+    long r = b;
+    while (b > 0) {
+        r = r * a;
+        b = b - a;
+    }
+    return r;
+}
+
+15.
+%rax: 26
+%rdi: 1
+%rsi: 2
+%rcx: 20 (16진수로 0x14)
+
+
+
+<2020>
+disassembly : 기계어 -> assembler 코드
+objdump -d sum
+
+
+
+
+
+
+
+
+
+
+
+
+
+
